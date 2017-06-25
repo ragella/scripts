@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: app-name
+    env: ${ENV}
+  name: MICROSERVICE-name
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    app: MICROSERVICE-app
+    env: ${ENV}
+  ports:
+    - port: 8080
+      targetPort: 8080

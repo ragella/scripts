@@ -1,0 +1,75 @@
+iapiVersion: v1
+kind: ReplicationController
+metadata:
+  annotations:
+    description: Service description
+  labels:
+    app: app-name
+    env: ${ENV}
+    version: ${VERSION}
+  name: service_name-${VERSION}
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 2
+  selector:
+    app: app-name
+    env: ${ENV}
+    version: ${VERSION}
+  template:
+    metadata:
+      annotations:
+        description: Service description
+        sumologic.com/sourceCategory: ${NAMESPACE}
+        sumologic.com/sourceName: app-name
+        sumologic.com/format: text
+      labels:
+        app: app-name
+        env: ${ENV}
+        version: ${VERSION}
+      name: app-name
+    spec:
+      containers:
+      - env:
+         - name: variable-1
+           value: variable-value-1
+         - name: variable-2
+           value: variable-value-2
+         - name: POD_NAME
+           valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+         - name: variable-name1
+           valueFrom:
+             secretKeyRef:
+               name: secret-name
+               key: name
+         - name: variable-name2
+           valueFrom:
+             secretKeyRef:
+               name: secret-name
+               key: name
+        volumeMounts:
+        - name: volume1
+          mountPath: "/path"
+          readOnly: true
+        - name: volume-2
+          mountPath: "/path"
+          readOnly: true
+        image: image_url
+        imagePullPolicy: Always
+        name: app-name
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - name: volume-1
+        secret:
+          secretName: secret-name
+          items:
+            - key: keyname
+              path: path
+      - name: volume-2
+        secret:
+          secretName: secret-name
+          items:
+            - key: key-name
+              path: path
