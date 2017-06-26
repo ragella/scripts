@@ -1,0 +1,65 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Resources": {
+    "Lambda-function-name": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+            "Code": {
+                "S3Bucket": "Bucket-name",
+                "S3Key": "File-name"
+            },
+            "FunctionName": "Lambda-function-name",
+            "Handler": "Lambda-handler",
+            "Role": "ARN-IAM-Role",
+            "Runtime": "environment(nodejs/python/java/c#)",
+            "Environment": {
+                "Variables": {
+                    "key1": "value1",
+                    "key2": "value2"
+                }
+            }
+            }
+      },
+        "API-Name": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+                "Name": "API_Name",
+                "Description": "API used for so and so",
+                "FailOnWarnings": true
+            },
+        "Resource-name": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+                "RestApiId": {
+                    "Ref": "API-Name"
+                },
+                "ParentId": {
+                    "Fn::GetAtt": [
+                        "API-Name",
+                        "RootResourceId"
+                    ]
+                },
+                "PathPart": "divide"
+            },
+        "Method-Name": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+                    "AuthorizationType": "NONE",
+                    "HttpMethod": "GET",
+                    "ResourceId": {
+                        "Ref": "Resource-Name"
+                    },
+                    "RestApiId": {
+                        "Ref": "API-Name"
+                    },
+                    "Integration": {
+                        "Type": "AWS_PROXY",
+                        "IntegrationHttpMethod": "GET",
+                        "Uri": "!Sub arn:aws:apigateway:region:lambda:path/2015-03-31/functions/LambdaFunctionARN/invocations"
+                    }
+                }
+            }
+        }
+    }
+}
+}
